@@ -68,6 +68,7 @@ class LINE():
                 requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
             else:
                 requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic, files = {"imageFile": open(files, "rb")})
+        print("LINEにメッセージを送信しました。")
 
 # Slackに送信するクラス
 class SLACK():
@@ -97,6 +98,7 @@ class SLACK():
                 requests.post(self.webhook_url, data = json.dumps(self.text_dic))
             else:
                 requests.post(self.webhook_url, data = json.dumps({"text":self.text, "attachments":[{"fields":[{"title":"テスト", "value":"てすと"}],"image_url":files}]}))
+        print("SLACKにメッセージを送信しました。")
 
 # Discordに送信するクラス
 class DISCORD():
@@ -122,3 +124,4 @@ class DISCORD():
         except:
             import requests, json
             requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
+        print("Discordにメッセージを送信しました。")
