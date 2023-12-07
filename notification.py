@@ -1,6 +1,12 @@
 # こちらは色んな媒体にプログラム終了時などに簡単にメッセージを送るためのモジュールです。
 
-# google colabで使用する場合
+#以下の1,2のどちらかの方法でインポート出来ます(1を推奨)
+# 1.githubからインポートする場合
+"""
+!git clone https://github.com/rimikoro/notification.git
+from notification.notification import LINE, DISCORD, SLACK
+"""
+# 2.google driveを用いる場合
 """
 まず、このファイルをgoogle driveにMy_Moduleというフォルダを作り、そこにこのファイルを格納してください。
 その後、google colabなどで以下のプログラムをコピペすることでインストールできます。
@@ -25,7 +31,8 @@ Discordに送るためのコマンド
 DISCORD().send()
 
 デフォルトだとそれぞれの__init__内に記述した文章を送信します
-google colabなどで使用する際 ~.sender()の()内に文章を書くとその文章を送ることができます
+google colabなどで使用する際 ~.send()の引数であるtext=に文章を書くとその文章を送ることができます
+さらに、files=に画像の名前を指定すると画像も送れます
 (google colab内の変数などを送りたいときに使用を想定)
 """
 
@@ -46,22 +53,28 @@ class LINE():
         self.TOKEN_dic = {'Authorization': 'Bearer' + ' ' + self.TOKEN}
         self.send_dic = {'message': self.send_contents}
     
-    def send(self, text = None):
+    def send(self, text = None, files = None):
         if text is not None:
             self.send_contents = text
             self.send_dic = {'message': self.send_contents}
         try:
-            requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
+            if files is None:
+                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
+            else:
+                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic, files = {"imageFile": open(files, "rb")})
         except:
             import requests
-            requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
+            if files is None:
+                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
+            else:
+                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic, files = {"imageFile": open(files, "rb")})
 
 # Slackに送信するクラス
 class SLACK():
     def __init__(self):
         # self.webhook_urlに送りたい場所のwebhook urlを入力
         # urlの取得はこちらからできます。→　https://slack.com/services/new/incoming-webhook
-        self.webhook_url = "https://hooks.slack.com/services/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"
+        self.webhook_url = "https://hooks.slack.com/services/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"
         
         # self.textに送りたい文章を入力
         self.text = "AIのプログラムが終了しました。"
@@ -69,15 +82,21 @@ class SLACK():
         # requestsで送るために辞書化
         self.text_dic = {"text":self.text}
     
-    def send(self, text = None):
+    def send(self, text = None, files = None):
         if text is not None:
             self.text = text
             self.text_dic = {"text":self.text}
         try:
-            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
+            if files is None:
+                requests.post(self.webhook_url, data = json.dumps(self.text_dic))
+            else:
+                requests.post(self.webhook_url, data = json.dumps({"text":self.text, "file":files}))
         except:
             import requests, json
-            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
+            if files is None:
+                requests.post(self.webhook_url, data = json.dumps(self.text_dic))
+            else:
+                requests.post(self.webhook_url, data = json.dumps({"text":self.text, "attachments":[{"fields":[{"title":"テスト", "value":"てすと"}],"image_url":files}]}))
 
 # Discordに送信するクラス
 class DISCORD():
