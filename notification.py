@@ -6,6 +6,7 @@
 !git clone https://github.com/rimikoro/notification.git
 from notification.notification import LINE, DISCORD, SLACK
 """
+
 # 2.google driveを用いる場合
 """
 まず、このファイルをgoogle driveにMy_Moduleというフォルダを作り、そこにこのファイルを格納してください。
@@ -75,7 +76,7 @@ class SLACK():
     def __init__(self):
         # self.webhook_urlに送りたい場所のwebhook urlを入力
         # urlの取得はこちらからできます。→　https://slack.com/services/new/incoming-webhook
-        self.webhook_url = "https://hooks.slack.com/services/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"
+        self.webhook_url = "https://hooks.slack.com/services/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"
         
         # self.textに送りたい文章を入力
         self.text = "AIのプログラムが終了しました。"
@@ -83,21 +84,15 @@ class SLACK():
         # requestsで送るために辞書化
         self.text_dic = {"text":self.text}
     
-    def send(self, text = None, files = None):
+    def send(self, text = None):
         if text is not None:
             self.text = text
             self.text_dic = {"text":self.text}
         try:
-            if files is None:
-                requests.post(self.webhook_url, data = json.dumps(self.text_dic))
-            else:
-                requests.post(self.webhook_url, data = json.dumps({"text":self.text, "file":files}))
+            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
         except:
             import requests, json
-            if files is None:
-                requests.post(self.webhook_url, data = json.dumps(self.text_dic))
-            else:
-                requests.post(self.webhook_url, data = json.dumps({"text":self.text, "attachments":[{"fields":[{"title":"テスト", "value":"てすと"}],"image_url":files}]}))
+            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
         print("SLACKにメッセージを送信しました。")
 
 # Discordに送信するクラス
@@ -115,13 +110,26 @@ class DISCORD():
         self.content_dic = {"content": self.content}
         self.headers = {"Content-Type": "application/json"}
     
-    def send(self, text = None):
+    def send(self, text = None, files = None):
         if text is not None:
             self.content = text
             self.content_dic = {"content": self.content}
+        elif files is not None:
+            with open(files, "rb") as f:
+                file_bin = f.read()
+                file = {"favicon":(files,file_bin),}
         try:
-            requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
+            if files is None:
+                requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
+                print("Discordにメッセージを送信しました。")
+            else:
+                requests.post(self.webhook_url, files = file)
+                print("Discordに画像を送信しました。")
         except:
             import requests, json
-            requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
-        print("Discordにメッセージを送信しました。")
+            if files is None:
+                requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
+                print("Discordにメッセージを送信しました。")
+            else:
+                requests.post(self.webhook_url, files = file)
+                print("Discordに画像を送信しました。")
