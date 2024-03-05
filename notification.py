@@ -40,9 +40,13 @@ google colabなどで使用する際 ~.send()の引数であるtext=に文章を
 # Lineに送信するクラス
 class LINE():
     def __init__(self):
+        import configparser
+        config_ini = configparser.ConfigParser()
+        config_ini.read('setting.ini', encoding='utf-8')
+        
         # self.TOKENに自分のline-notifyのトークンを入力
         # TOKENの取得はこちらからできます。→　https://notify-bot.line.me/ja/
-        self.TOKEN = 'AlQdD2L5NlrPkJOoNMDP3eMG8zth0u8kaPYhtzY0CUU'
+        self.TOKEN = config_ini['LINE']['22A2001']
         
         # self.api_urlは何も変更しないでください
         self.api_url = 'https://notify-api.line.me/api/notify'
