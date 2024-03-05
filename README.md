@@ -1,2 +1,2 @@
 # notification
-LINE,SLACK,DISCODEに通知を送るためのpython codeです
+LINE,SLACK,DISCODEに通知を送るためのpython moduleです
