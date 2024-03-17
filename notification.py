@@ -40,14 +40,10 @@ google colabなどで使用する際 ~.send()の引数であるtext=に文章を
 # Lineに送信するクラス
 class LINE():
     def __init__(self):
-        import configparser
-        config_ini = configparser.ConfigParser()
-        config_ini.read('setting.ini', encoding='utf-8')
         
         # self.TOKENに自分のline-notifyのトークンを入力
         # TOKENの取得はこちらからできます。→　https://notify-bot.line.me/ja/
-        self.TOKEN = config_ini['LINE']['22A2001']
-        
+        self.TOKEN = "AlQdD2L5NlrPkJOoNMDP3eMG8zth0u8kaPYhtzY0CUU"
         # self.api_urlは何も変更しないでください
         self.api_url = 'https://notify-api.line.me/api/notify'
         
@@ -57,7 +53,7 @@ class LINE():
         # requestsで送るために辞書化
         self.TOKEN_dic = {'Authorization': 'Bearer' + ' ' + self.TOKEN}
         self.send_dic = {'message': self.send_contents}
-    
+
     def send(self, text = None, files = None):
         if text is not None:
             self.send_contents = text
@@ -137,3 +133,5 @@ class DISCORD():
             else:
                 requests.post(self.webhook_url, files = file)
                 print("Discordに画像を送信しました。")
+
+LINE().send()
