@@ -1,10 +1,19 @@
 # こちらは色んな媒体にプログラム終了時などに簡単にメッセージを送るためのモジュールです。
+# 必ず一読してから使用してください。
 
-#以下の1,2のどちらかの方法でインポート出来ます(1を推奨)
-# 1.githubからインポートする場合
+#以下の1,2のどちらかの方法でインポートし、利用出来ます(1を推奨)
+# どちらの場合においても最初に下のLIEN,SLACK,DISCODEのうち使う予定の物の設定を完了させてください
+
+# 1.githubを用いる場合
 """
-!git clone https://github.com/rimikoro/notification.git
+まずgithubにこのpython fileをprivate(*)の設定でアップロードしてください。(*:keyの漏洩を防ぐため)
+緑色のCodeボタンを押してLocalのタブのHTTPSを選択し、「!git clone https://github.com/***/notification.git」のような文章をコピーしてください。
+
+実際に使う際は下記のように記述することで利用できるようになります(importの後に記述するのはLINE, DISCORD, SLACKのうち使いたい物のみで大丈夫です)
+---------------------------program--------------------------
+!git clone https://github.com/***/notification.git
 from notification.notification import LINE, DISCORD, SLACK
+---------------------------program--------------------------
 """
 
 # 2.google driveを用いる場合
@@ -20,60 +29,71 @@ from drive.MyDrive.My_Module.notification import LINE, DISCORD, SLACK
 ----------------program---------------
 """
 
-# google colab内で使う際は次のように記述します。
+# 使う際は次のように記述します。
 """
 LINEに送る為のコマンド
-LINE().send()
+LINE()
 
-Slackに送るためのコマンド
-SLACK().send()
+Slackに送る為のコマンド
+SLACK()
 
-Discordに送るためのコマンド
-DISCORD().send()
+Discordに送る為のコマンド
+DISCORD()
 
 デフォルトだとそれぞれの__init__内に記述した文章を送信します
-google colabなどで使用する際 ~.send()の引数であるtext=に文章を書くとその文章を送ることができます
-さらに、files=に画像の名前を指定すると画像も送れます
-(google colab内の変数などを送りたいときに使用を想定)
+google colabなどで使用する際、LINE()などの引数であるtext=を指定して文章を書くとその文章を送ることができます
+さらに、files=に画像の名前を指定すると画像も送れます(SLACKのみ対応していません)
+(google colab内の変数などを送りたいとき、任意の文章を送信したいときに使用を想定)
 """
 
-# Lineに送信するクラス
-class LINE():
-    def __init__(self):
-        
-        # self.TOKENに自分のline-notifyのトークンを入力
-        # TOKENの取得はこちらからできます。→　https://notify-bot.line.me/ja/
-        self.TOKEN = "AlQdD2L5NlrPkJOoNMDP3eMG8zth0u8kaPYhtzY0CUU"
-        # self.api_urlは何も変更しないでください
-        self.api_url = 'https://notify-api.line.me/api/notify'
-        
-        # self.send_contentsに送りたい文章を入力
-        self.send_contents = "AIのプログラムが終了しました。"
-        
-        # requestsで送るために辞書化
-        self.TOKEN_dic = {'Authorization': 'Bearer' + ' ' + self.TOKEN}
-        self.send_dic = {'message': self.send_contents}
+# コマンド使用例
+"""
+LINE() ----> AIのプログラムが終了しました。 (デフォルト文)が送信される
+LINE(text="hello world !") ----> hello world ! (指定した文のみ)が送信される
+LINE(file="test.png") ----> AIのプログラムが終了しました。 + test.png (デフォルト文+指定した画像)が送信される
+LINE(text="hello world !", file="test.png") ----> hello world ! + test.png (指定した文+指定した画像)が送信される
+LINE(text="", file="test.png") ----> 何も送信されない
 
-    def send(self, text = None, files = None):
-        if text is not None:
-            self.send_contents = text
-            self.send_dic = {'message': self.send_contents}
-        try:
-            if files is None:
-                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
-            else:
-                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic, files = {"imageFile": open(files, "rb")})
-        except:
-            import requests
-            if files is None:
-                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic)
-            else:
-                requests.post(self.api_url, headers=self.TOKEN_dic, data=self.send_dic, files = {"imageFile": open(files, "rb")})
-        print("LINEにメッセージを送信しました。")
+LINE(f"loss:{loss}")  このように書くことで変数の値を送ることも可能です
+
+文を改行したいときは\nを用いることで実現できます
+"""
+
+# Lineに送信する関数
+def LINE(text = None, file = None):
+    # self.TOKENに自分のline-notifyのトークンを入力　**必須です**
+    # TOKENの取得はこちらからできます。→　https://notify-bot.line.me/ja/
+    TOKEN = "AlQdD2L5NlrPkJOoNMDP3eMG8zth0u8kaPYhtzY0CUU"
+    
+    # self.api_urlは何も変更しないでください
+    api_url = 'https://notify-api.line.me/api/notify'
+    
+    # self.send_contentsにデフォルト文の設定
+    send_contents = "AIのプログラムが終了しました。"
+    
+    # requestsで送るために辞書化
+    TOKEN_dic = {'Authorization': 'Bearer' + ' ' + TOKEN}
+    send_dic = {'message': send_contents}
+
+    if text is not None:
+        send_contents = text
+        send_dic = {'message': send_contents}
+    try:
+        if file is None:
+            requests.post(api_url, headers=TOKEN_dic, data=send_dic)
+        else:
+            requests.post(api_url, headers=TOKEN_dic, data=send_dic, files = {"imageFile": open(file, "rb")})
+    except:
+        import requests
+        if file is None:
+            requests.post(api_url, headers=TOKEN_dic, data=send_dic)
+        else:
+            requests.post(api_url, headers=TOKEN_dic, data=send_dic, files = {"imageFile": open(file, "rb")})
+    print("LINEにメッセージを送信しました。")
 
 # Slackに送信するクラス
 class SLACK():
-    def __init__(self):
+    def __init__(self, text = None):
         # self.webhook_urlに送りたい場所のwebhook urlを入力
         # urlの取得はこちらからできます。→　https://slack.com/services/new/incoming-webhook
         self.webhook_url = "https://hooks.slack.com/services/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"
@@ -84,7 +104,6 @@ class SLACK():
         # requestsで送るために辞書化
         self.text_dic = {"text":self.text}
     
-    def send(self, text = None):
         if text is not None:
             self.text = text
             self.text_dic = {"text":self.text}
@@ -97,7 +116,7 @@ class SLACK():
 
 # Discordに送信するクラス
 class DISCORD():
-    def __init__(self):
+    def __init__(self, text = None, files = None):
         # self.webhook_urlに送りたい場所のwebhook urlを入力
         # urlの取得はこちらを参照してください。→　https://qiita.com/otuhs_d/items/41f018ec3762db93a740
         # 現在webhookは送りたいテキストチャンネルの設定内の連携サービスの中で設定ができます。
@@ -110,7 +129,6 @@ class DISCORD():
         self.content_dic = {"content": self.content}
         self.headers = {"Content-Type": "application/json"}
     
-    def send(self, text = None, files = None):
         if text is not None:
             self.content = text
             self.content_dic = {"content": self.content}
@@ -124,7 +142,7 @@ class DISCORD():
                 print("Discordにメッセージを送信しました。")
             else:
                 requests.post(self.webhook_url, files = file)
-                print("Discordに画像を送信しました。")
+                print("Discordにメッセージと画像を送信しました。")
         except:
             import requests, json
             if files is None:
@@ -132,6 +150,4 @@ class DISCORD():
                 print("Discordにメッセージを送信しました。")
             else:
                 requests.post(self.webhook_url, files = file)
-                print("Discordに画像を送信しました。")
-
-LINE().send()
+                print("Discordにメッセージと画像を送信しました。")
