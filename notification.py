@@ -85,69 +85,68 @@ def LINE(text = None, file = None):
             requests.post(api_url, headers=TOKEN_dic, data=send_dic, files = {"imageFile": open(file, "rb")})
     except:
         import requests
+
         if file is None:
             requests.post(api_url, headers=TOKEN_dic, data=send_dic)
         else:
             requests.post(api_url, headers=TOKEN_dic, data=send_dic, files = {"imageFile": open(file, "rb")})
     print("LINEにメッセージを送信しました。")
 
-# Slackに送信するクラス
-class SLACK():
-    def __init__(self, text = None):
-        # self.webhook_urlに送りたい場所のwebhook urlを入力
-        # urlの取得はこちらからできます。→　https://slack.com/services/new/incoming-webhook
-        self.webhook_url = "https://hooks.slack.com/services/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"
-        
-        # self.textに送りたい文章を入力
-        self.text = "AIのプログラムが終了しました。"
-        
-        # requestsで送るために辞書化
-        self.text_dic = {"text":self.text}
+# Slackに送信する関数
+def SLACK(text = None):
+    # self.webhook_urlに送りたい場所のwebhook urlを入力
+    # urlの取得はこちらからできます。→　https://slack.com/services/new/incoming-webhook
+    webhook_url = "https://hooks.slack.com/services/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"
     
-        if text is not None:
-            self.text = text
-            self.text_dic = {"text":self.text}
-        try:
-            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
-        except:
-            import requests, json
-            requests.post(self.webhook_url, data = json.dumps(self.text_dic))
-        print("SLACKにメッセージを送信しました。")
+    # self.textに送りたい文章を入力
+    content = "AIのプログラムが終了しました。"
+    
+    # requestsで送るために辞書化
+    text_dic = {"text":content}
 
-# Discordに送信するクラス
-class DISCORD():
-    def __init__(self, text = None, files = None):
-        # self.webhook_urlに送りたい場所のwebhook urlを入力
-        # urlの取得はこちらを参照してください。→　https://qiita.com/otuhs_d/items/41f018ec3762db93a740
-        # 現在webhookは送りたいテキストチャンネルの設定内の連携サービスの中で設定ができます。
-        self.webhook_url = "https://discordapp.com/api/webhooks/1179833652411117649/oa9RhdD2u8r-TaF8ce5jPsCkuAiNgcumzFUVoSxyBORps15J0MkL0yMMkHt9UZKrPcnf"
-        
-        # self.contntに送りたい文章を入力
-        self.content = "AIのプログラムが終了しました。"
-        
-        # requestsで送るために辞書化
-        self.content_dic = {"content": self.content}
-        self.headers = {"Content-Type": "application/json"}
+    if text is not None:
+        content = text
+        text_dic = {"text":content}
+    try:
+        requests.post(webhook_url, data = json.dumps(text_dic))
+    except:
+        import requests, json
+        requests.post(webhook_url, data = json.dumps(text_dic))
+    print("SLACKにメッセージを送信しました。")
+
+# Discordに送信する関数
+def DISCORD(text = None, files = None):
+    # self.webhook_urlに送りたい場所のwebhook urlを入力
+    # urlの取得はこちらを参照してください。→　https://qiita.com/otuhs_d/items/41f018ec3762db93a740
+    # 現在webhookは送りたいテキストチャンネルの設定内の連携サービスの中で設定ができます。
+    webhook_url = "https://discordapp.com/api/webhooks/1179833652411117649/oa9RhdD2u8r-TaF8ce5jPsCkuAiNgcumzFUVoSxyBORps15J0MkL0yMMkHt9UZKrPcnf"
     
-        if text is not None:
-            self.content = text
-            self.content_dic = {"content": self.content}
-        elif files is not None:
-            with open(files, "rb") as f:
-                file_bin = f.read()
-                file = {"favicon":(files,file_bin),}
-        try:
-            if files is None:
-                requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
-                print("Discordにメッセージを送信しました。")
-            else:
-                requests.post(self.webhook_url, files = file)
-                print("Discordにメッセージと画像を送信しました。")
-        except:
-            import requests, json
-            if files is None:
-                requests.post(self.webhook_url, json.dumps(self.content_dic), headers = self.headers)
-                print("Discordにメッセージを送信しました。")
-            else:
-                requests.post(self.webhook_url, files = file)
-                print("Discordにメッセージと画像を送信しました。")
+    # self.contntに送りたい文章を入力
+    content = "AIのプログラムが終了しました。"
+    
+    # requestsで送るために辞書化
+    content_dic = {"content": content}
+    headers = {"Content-Type": "application/json"}
+
+    if text is not None:
+        content = text
+        content_dic = {"content": content}
+    elif files is not None:
+        with open(files, "rb") as f:
+            file_bin = f.read()
+            file = {"favicon":(files,file_bin),}
+    try:
+        if files is None:
+            requests.post(webhook_url, json.dumps(content_dic), headers = headers)
+            print("Discordにメッセージを送信しました。")
+        else:
+            requests.post(webhook_url, files = file)
+            print("Discordにメッセージと画像を送信しました。")
+    except:
+        import requests, json
+        if files is None:
+            requests.post(webhook_url, json.dumps(content_dic), headers = headers)
+            print("Discordにメッセージを送信しました。")
+        else:
+            requests.post(webhook_url, files = file)
+            print("Discordにメッセージと画像を送信しました。")
