@@ -1,4 +1,4 @@
-# notification
+# Infomation
 LINE,SLACK,DISCODEに通知を送るためのpython moduleです
 
 # LINE
