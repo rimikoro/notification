@@ -6,7 +6,7 @@ LINE(text="",file="")
 このようにすることでテキストと画像ファイルを送信できる
 
 # SLACK
-SLACK(text="")
+SLACK(text="")\n
 テキストのみを送信できる
 
 # DISCORD
