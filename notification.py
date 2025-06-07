@@ -119,7 +119,7 @@ def DISCORD(text = None, files = None):
     # self.webhook_urlに送りたい場所のwebhook urlを入力
     # urlの取得はこちらを参照してください。→　https://qiita.com/otuhs_d/items/41f018ec3762db93a740
     # 現在webhookは送りたいテキストチャンネルの設定内の連携サービスの中で設定ができます。
-    webhook_url = "https://discordapp.com/api/webhooks/1179833652411117649/oa9RhdD2u8r-TaF8ce5jPsCkuAiNgcumzFUVoSxyBORps15J0MkL0yMMkHt9UZKrPcnf"
+    webhook_url = "https://discordapp.com/api/webhooks/1380761187339206686/nth5h8301qmfOqg_Kqiqv9OOrNlurYJmwoFC7liDuW78lceOvLlQwNyQNkqVH9dVqVt4"
     
     # self.contntに送りたい文章を入力
     content = "AIのプログラムが終了しました。"
